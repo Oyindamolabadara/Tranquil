@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['tranquil-blog.herokuapp.com', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [
+    # 'blog.apps.BlogConfig'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
