@@ -15,7 +15,7 @@ class Post(models.Model):
     )
     featured_image = CloudinaryField('image', default='placeholder')
     excerpt = models.TextField(blank=True)
-    updated_on = models.DateTimeField(default=timezone.now)
+   # updated_on = models.DateTimeField(default=timezone.now)
     content = models.TextField()
     created_on = models.DateTimeField(default=timezone.now)
     status = models.IntegerField(choices=STATUS, default=0)
