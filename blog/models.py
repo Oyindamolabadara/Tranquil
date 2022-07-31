@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.urls import reverse
 from cloudinary.models import CloudinaryField
 
 
@@ -20,12 +21,17 @@ class Post(models.Model):
     likes = models.ManyToManyField(
         User, related_name='blogpost_like', blank=True)
 
-
-     #class Meta:
-       # ordering = ["-created_on"]
-
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('post-detail', kwargs={'pk': self.pk})
+
+    def save(self, *args, **kwargs):  
+        if not self.slug:
+            self.slug = self.title.replace
+        return super().save(*args, **kwargs)
+
 
     def number_of_likes(self):
         return self.likes.count()
