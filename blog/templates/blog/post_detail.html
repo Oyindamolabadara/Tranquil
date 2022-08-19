@@ -1,85 +1,30 @@
 {% extends 'blog/base.html' %}{% block content %}
 {% load crispy_forms_tags %}
 
-    <article class="media content-section">
-        <div class="media-body">
+<article class="media content-section">
+    <div class="media-body">
         <div class="article-metadata">
             <a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
             <small class="text-muted">{{ object.created_on|date:"F d, Y" }}</small>
             {% if object.author == user %}
-          <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
-            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
-          </div>
-        {% endif %}
+            <div>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
+                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+            </div>
+            {% endif %}
         </div>
         <p class="article-content">{{ object.content }}</p>
-        </div>
-    </article>
+    </div>
+    <form action="{% url 'blogpost_like' object.id %}" method="POST">
+        {% csrf_token %}
+        {% if post_is_liked %}
+        <button type="submit" name="blogpost_id" value="{{object.id}}" class="btn btn-primary btn-sm mt-1 mb-1">Unlike</button>
+        {% else %}
+        <button type="submit" name="blogpost_id" value="{{object.id}}" class="btn btn-primary btn-sm mt-1 mb-1">Like</button>
+        {% endif %}
+    </form>
+</article>
 
-    <div class="container">
-      <div class="row">
-          <div class="col card mb-4  mt-3 left  top">
-              <div class="card-body">
-                  <!-- The post content goes inside the card-text. -->
-                  <!-- Use the | safe filter inside the template tags -->
-                  <p class="card-text ">
-                      {{ post.content | safe }}
-                  </p>
-                  <div class="row">
-  
-                      <div class="col-1">
-                          <!-- The number of likes goes before the closing strong tag -->
-                          <strong class="text-secondary"><i class="far fa-heart"></i> {{ post.number_of_likes }} </strong>
-                      </div>
-                      <div class="col-1">
-                          {% with comments.count as total_comments %}
-                          <strong class="text-secondary"><i class="far fa-comments"></i>
-                              <!-- Our total_comments variable goes before the closing strong tag -->
-                              {{ total_comments }}</strong>
-                          {% endwith %}
-                      </div>
-                      <div class="card-body">
-                          <!-- We want a for loop inside the empty control tags to iterate through each comment in comments -->
-                          {% for comment in comments %}
-                          <div class="comments" style="padding: 10px;">
-                              <p class="font-weight-bold">
-                                  <!-- The commenter's name goes here. Check the model if you're not sure what that is -->
-                                  {{ comment.name }}
-                                  <span class=" text-muted font-weight-normal">
-                                      <!-- The comment's created date goes here -->
-                                      {{ comment.created_on }}
-                                  </span> wrote:
-                              </p>
-                              <!-- The body of the comment goes before the | -->
-                              {{ comment.body | linebreaks }}
-                          </div>
-                          <!-- Our for loop ends here -->
-                          {% endfor %}
-                      </div>
-                      <!-- For later -->
-                      {% if commented %}
-                      <div class="alert alert-success" role="alert">
-                          Your comment is awaiting approval
-                      </div>
-                      {% else %}
-                      {% if user.is_authenticated %}
-        
-                      <h5>Leave a comment:</h5>
-                      <p>Posting as: {{ user.username }}</p>
-                      <form method="post" style="margin-top: 1.3em;">
-                          {{ comment_form | crispy }}
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-primary btn-sm mt-1 mb-1">Submit</button>
-                      </form>
-                      {% endif %}
-                      {% endif %}
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-  
+
 {% endblock content %}
-
 

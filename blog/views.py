@@ -1,6 +1,8 @@
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment
@@ -12,6 +14,14 @@ def home(request):
     }
     return render(request, 'blog/home.html', context)
 
+def LikeView(request, pk):
+    post = get_object_or_404(Post, id=request.POST.get('blogpost_id'))
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+    return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
+
 class PostListView(ListView):
     model = Post
     template_name = 'blog/home.html'
@@ -21,7 +31,7 @@ class PostListView(ListView):
 
 class UserPostListView(ListView):
     model = Post
-    template_name = 'blog/user_posts.html'  # <app>/<model>_<viewtype>.html
+    template_name = 'blog/user_posts.html'  
     context_object_name = 'posts'
     paginate_by = 5
 
@@ -30,67 +40,20 @@ class UserPostListView(ListView):
         return Post.objects.filter(author=user).order_by('-created_on')
 
 
-
 class PostDetailView(DetailView):
     model = Post
-    
-    
-class AddCommentView (CreateView):
-    model = Comment
-    template_name = 'blog/post_detail.html'
+    #template_name = 'blog/post_detail.html'
 
+    def get_context_data(self, *args, **kwargs):
+        data = super().get_context_data(**kwargs)
 
-    def get(self, request, *args, **kwargs):
-        queryset = Post.objects.filter(status=1)
-        post = get_object_or_404(queryset)
-        comments = post.comments.filter(approved=True).order_by("-created_on")
+        likes_connected = get_object_or_404(Post, id=self.kwargs['pk'])
         liked = False
-        if post.likes.filter(id=self.request.user.id).exists():
+        if likes_connected.likes.filter(id=self.request.user.id).exists():
             liked = True
-
-        return render(
-            request,
-            "template_name",
-            {
-                "post": post,
-                "comments": comments,
-                "commented": False,
-                "liked": liked,
-                "comment_form": CommentForm()
-            },
-        )
-
-    def post(self, request, *args, **kwargs):
-
-        queryset = Post.objects.filter(status=1)
-        post = get_object_or_404(queryset)
-        comments = post.comments.filter(approved=True).order_by("-created_on")
-        liked = False
-        if post.likes.filter(id=self.request.user.id).exists():
-            liked = True
-
-        comment_form = CommentForm(data=request.POST)
-        if comment_form.is_valid():
-            comment_form.instance.email = request.user.email
-            comment_form.instance.name = request.user.username
-            comment = comment_form.save(commit=False)
-            comment.post = post
-            comment.save()
-        else:
-            comment_form = CommentForm()
-
-        return render(
-            request,
-            "template_name",
-            {
-                "post": post,
-                "comments": comments,
-                "commented": True,
-                "comment_form": comment_form,
-                "liked": liked
-            },
-        )
-
+        data['number_of_likes'] = likes_connected.number_of_likes()
+        data['post_is_liked'] = liked
+        return data
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -126,3 +89,4 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
+
