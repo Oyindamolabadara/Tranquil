@@ -5,6 +5,7 @@ from django.urls import reverse
 from cloudinary.models import CloudinaryField
 
 
+
 STATUS = ((0, "Draft"), (1, "Published"))
 
 
@@ -36,6 +37,9 @@ class Post(models.Model):
     def number_of_likes(self):
         return self.likes.count()
 
+    @property
+    def number_of_comments(self):
+        return Comment.objects.filter(blogpost_connected=self).count()
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
@@ -43,7 +47,7 @@ class Comment(models.Model):
     name = models.CharField(max_length=80)
     email = models.EmailField()
     body = models.TextField()
-    created_on = models.DateTimeField(default=timezone.now)
+    created_on = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
 
     class Meta:
