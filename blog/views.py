@@ -6,7 +6,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment
-from .forms import CommentForm
+from .forms import CommentForm, EditForm
 
 def home(request):
     context = {
@@ -27,7 +27,7 @@ class PostListView(ListView):
     template_name = 'blog/home.html'
     context_object_name = 'posts'
     ordering = ['-created_on']
-    paginate_by = 5
+    paginate_by = 1
 
 class UserPostListView(ListView):
     model = Post
@@ -80,7 +80,9 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    #fields = ['title', 'content']
+    form_class = EditForm
+    template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -91,6 +93,8 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         if self.request.user == post.author:
             return True
         return False
+
+    
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
