@@ -69,6 +69,14 @@ TEMPLATES = [
     },
 ]
 
+SUMMERNOTE_CONFIG = {
+    'iframe': False,
+    'summernote': {
+        'width': '100%',
+        'height': '480',
+    }
+}
+
 WSGI_APPLICATION = 'tranquil.wsgi.application'
 
 

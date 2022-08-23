@@ -27,7 +27,7 @@ class PostListView(ListView):
     template_name = 'blog/home.html'
     context_object_name = 'posts'
     ordering = ['-created_on']
-    paginate_by = 1
+    paginate_by = 8
 
 class UserPostListView(ListView):
     model = Post
