@@ -56,13 +56,13 @@ class PostDetailView(DetailView):
         return data
 
         comments_connected = Comment.objects.filter(
-            blogpost_connected=self.get_object()).order_by('-created_on')
+            post=self.get_object()).order_by('-created_on')
         data['comments'] = comments_connected
         if self.request.user.is_authenticated:
             data['comment_form'] = CommentForm(instance=self.request.user)
 
         return data
-
+        
     def post(self, request, *args, **kwargs):
         new_comment = Comment(body=request.POST.get('body'),
                                   name=self.request.user,

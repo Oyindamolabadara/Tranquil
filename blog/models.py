@@ -37,11 +37,6 @@ class Post(models.Model):
         """number of likes in a post"""
         return self.likes.count()
 
-    @property
-    def number_of_comments(self):
-        """ number of comments in a post """
-        return Comment.objects.filter(blogpost_connected=self).count()
-
 
 class Comment(models.Model):
     """Comment Model"""
@@ -49,9 +44,14 @@ class Comment(models.Model):
                              related_name="comments")
     name = models.CharField(max_length=80)
     email = models.EmailField()
-    body = models.TextField()
+    body = models.TextField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
+
+    @property
+    def number_of_comments(self):
+        """ number of comments in a post """
+        return Comment.objects.filter(post=self).count()
 
     class Meta:
         """created on field"""

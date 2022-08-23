@@ -42,7 +42,7 @@
     <form method="POST">
       {% csrf_token %}
       <div class="form-group">
-        {{ comment_form }}
+        {{ comment_form | crispy | safe}}
         <button class="btn btn-info" type="submit">Add comment <i class="fas fa-comments"></i></button>
       </div>
     </form>
@@ -63,7 +63,7 @@
             <small class="text-muted">{{ comment.created_on}}</small>
           </span>
           <p>
-            {{ comment.content|safe }}
+            {{ comment.body|safe }}
           </p>
         </div>
       </li>
