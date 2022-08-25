@@ -23,9 +23,10 @@ class Post(models.Model):
 
     def __str__(self):
         """return self title"""
-        return self.title
+        return str(self.title)
 
     def get_absolute_url(self):
+        """ return reverse link to post detail"""
         return reverse('post-detail', kwargs={'pk': self.pk})
 
     def save(self, *args, **kwargs):
@@ -48,10 +49,6 @@ class Comment(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
 
-    @property
-    def number_of_comments(self):
-        """ number of comments in a post """
-        return Comment.objects.filter(post=self).count()
 
     class Meta:
         """created on field"""

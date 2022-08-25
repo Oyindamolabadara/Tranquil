@@ -15,65 +15,36 @@
       {% endif %}
     </div>
     <p class="article-content">{{ object.content|safe }}</p>
-  </div>
 
-  <!-- Like/Unlike Post  -->
-  {% if user.is_authenticated %}
-  <form action="{% url 'blogpost_like' object.id %}" method="POST">
-    {% csrf_token %}
-    {% if post_is_liked %}
-    <button type="submit" name="blogpost_id" value="{{object.id}}"
-      class="btn btn-primary btn-sm mt-1 mb-1">Unlike</button>
-    {% else %}
-    <button type="submit" name="blogpost_id" value="{{object.id}}"
-      class="btn btn-primary btn-sm mt-1 mb-1">Like</button>
-    {% endif %}
-  </form>
-  {% else %}
-  <a class="btn btn-outline-info" href="{% url 'login' %}?next={{request.path}}">Log in to like this article!</a><br>
-  {% endif %}
-  <strong class="text-secondary">{{ number_of_likes }} Like{{ number_of_likes|pluralize }}</strong>
-
-  <!-- Comments  -->
-  <h2>Leave your comment!</h2>
-  <div id="comments_section">
-
+    <!-- Like/Unlike Post  -->
     {% if user.is_authenticated %}
-    <form method="POST">
+    <form action="{% url 'blogpost_like' object.id %}" method="POST">
       {% csrf_token %}
-      <div class="form-group">
-        {{ comment_form | crispy | safe}}
-        <button class="btn btn-info" type="submit">Add comment <i class="fas fa-comments"></i></button>
-      </div>
+      {% if post_is_liked %}
+      <button type="submit" name="blogpost_id" value="{{object.id}}"
+        class="btn btn-primary btn-sm mt-1 mb-1">Unlike</button>
+      {% else %}
+      <button type="submit" name="blogpost_id" value="{{object.id}}"
+        class="btn btn-primary btn-sm mt-1 mb-1">Like</button>
+      {% endif %}
     </form>
     {% else %}
-    <a class="btn btn-outline-info" href="{% url 'login' %}?next={{request.path}}">Log in to add a comment!</a><br>
+    <a class="btn btn-outline-info" href="{% url 'login' %}?next={{request.path}}">Log in to like this article!</a><br>
     {% endif %}
+    <strong class="text-secondary">{{ number_of_likes }} Like {{ pluralize|linebreaks }}</strong>
 
-    {% if comments %}
-    <strong class="text-secondary">{{ object.number_of_comments }}
-      Comment{{ object.number_of_comments|pluralize }}</strong>
-    <hr>
-    <ul>
-      {% for comment in comments %}
-      <li>
-        <div>
-          <span>
-            <strong class="text-info">{{ comment.name }} </strong>
-            <small class="text-muted">{{ comment.created_on}}</small>
-          </span>
-          <p>
-            {{ comment.body|safe }}
-          </p>
-        </div>
-      </li>
+    <!-- Comments  -->
+      <h2>Comments</h2>
+      {% if not post.comments.all %}
+      No comments yet.. <a class="btn btn-primary" href="{% url 'add-comment' post.pk %}">Add one</a>
+      {% else %}
+      {% for comment in post.comments.all %}
+      <strong>{{ comment.name }} - {{ comment.created_on }}</strong>
+      {{ comment.body | safe | linebreaks}}
       {% endfor %}
-    </ul>
-    {% else %}
-    <strong class="text-secondary">No comments yet...</strong>
-    {% endif %}
-
+      <a class="btn btn-primary" href="{% url 'add-comment' post.pk %}">Leave a comment:</a>
+      {% endif %}
   </div>
-
 </article>
+
 {% endblock content %}

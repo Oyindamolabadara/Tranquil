@@ -1,4 +1,4 @@
-
+"""Settings"""
 from pathlib import Path
 import os
 import dj_database_url
@@ -25,7 +25,6 @@ ALLOWED_HOSTS = ['tranquil-blog.herokuapp.com', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [
-    #'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
     'django.contrib.admin',
@@ -147,5 +146,3 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'blog-home'
 LOGIN_URL = 'login'
-
-#ACCOUNT_EMAIL_VERIFICATION = 'none'

@@ -1,8 +1,10 @@
+"""Users Model"""
 from django.db import models
 from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
+    """Users Profile Model"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -10,4 +12,3 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
-       

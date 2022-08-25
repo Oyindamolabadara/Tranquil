@@ -2,17 +2,26 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
+from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView
+)
 from .models import Post, Comment
 from .forms import CommentForm, EditForm
+
 
 def home(request):
     context = {
         'posts': Post.objects.all()
     }
     return render(request, 'blog/home.html', context)
+
 
 def LikeView(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('blogpost_id'))
@@ -22,6 +31,7 @@ def LikeView(request, pk):
         post.likes.add(request.user)
     return HttpResponseRedirect(reverse('post-detail', args=[str(pk)]))
 
+
 class PostListView(ListView):
     model = Post
     template_name = 'blog/home.html'
@@ -29,9 +39,10 @@ class PostListView(ListView):
     ordering = ['-created_on']
     paginate_by = 8
 
+
 class UserPostListView(ListView):
     model = Post
-    template_name = 'blog/user_posts.html'  
+    template_name = 'blog/user_posts.html'
     context_object_name = 'posts'
     paginate_by = 5
 
@@ -42,7 +53,6 @@ class UserPostListView(ListView):
 
 class PostDetailView(DetailView):
     model = Post
-    #template_name = 'blog/post_detail.html'
 
     def get_context_data(self, *args, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -55,20 +65,27 @@ class PostDetailView(DetailView):
         data['post_is_liked'] = liked
         return data
 
-        comments_connected = Comment.objects.filter(
-            post=self.get_object()).order_by('-created_on')
-        data['comments'] = comments_connected
-        if self.request.user.is_authenticated:
-            data['comment_form'] = CommentForm(instance=self.request.user)
 
-        return data
+class AddCommentView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/add_comment.html'
+    #fields = ('name', 'email', 'body',)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(AddCommentView, self).get_context_data(*args, **kwargs)
+        context["comment_form"] = CommentForm()
+        return context
         
-    def post(self, request, *args, **kwargs):
-        new_comment = Comment(body=request.POST.get('body'),
-                                  name=self.request.user,
-                                  post=self.get_object())
-        new_comment.save()
-        return self.get(self, request, *args, **kwargs)
+    def form_valid(self, form):
+        form.instance.post_id = self.kwargs['pk']
+        #form.object = form.save(commit=False)
+        #form.object.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['pk']})
+
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -78,9 +95,9 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    #fields = ['title', 'content']
     form_class = EditForm
     template_name = 'blog/post_form.html'
 
@@ -94,7 +111,6 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return True
         return False
 
-    
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -106,6 +122,6 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
+
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
-

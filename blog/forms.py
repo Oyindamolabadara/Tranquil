@@ -1,8 +1,8 @@
-
+""" Form models """
 from django import forms
+from django_summernote.widgets import SummernoteWidget
 from .models import Comment
 from .models import Post
-from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
 
 
 class CommentForm(forms.ModelForm):
@@ -10,18 +10,20 @@ class CommentForm(forms.ModelForm):
     Form class to add a comment
     """
     class Meta:
+        """ Comment form model """
         model = Comment
-        fields = ('body',)
-        #widgets = {
-            #'body': SummernoteWidget(),
-            #'bar': SummernoteInplaceWidget(),
-        #}
+        fields = ('name', 'body',)
+        widgets = {
+            'body': SummernoteWidget
+        }
 
-#class AnotherForm(forms.Form):
-    #bar = forms.CharField(widget=SummernoteInplaceWidget())
 
 class EditForm(forms.ModelForm):
-     class Meta:
+    """
+    Form class to edit a comment
+    """
+    class Meta:
+        """ Edit form model """
         model = Post
         fields = ('content',)
         widgets = {

@@ -1,5 +1,3 @@
-
-
 body {
     background: #fafafa;
     margin-top: 2rem;
@@ -54,12 +52,6 @@ body {
     white-space: pre-line;
   }
   
-  .article-img {
-    height: 65px;
-    width: 65px;
-    margin-right: 16px;
-  }
-  
   .article-metadata {
     padding-bottom: 1px;
     margin-bottom: 4px;
@@ -75,13 +67,6 @@ body {
     width: 25px;
     height: 25px;
     vertical-align: middle;
-  }
-  
-  .account-img {
-    height: 125px;
-    width: 125px;
-    margin-right: 20px;
-    margin-bottom: 16px;
   }
   
   .account-heading {
