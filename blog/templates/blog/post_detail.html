@@ -34,16 +34,16 @@
     <strong class="text-secondary">{{ number_of_likes }} Like {{ pluralize|linebreaks }}</strong>
 
     <!-- Comments  -->
-      <h2>Comments</h2>
-      {% if not post.comments.all %}
-      No comments yet.. <a class="btn btn-primary" href="{% url 'add-comment' post.pk %}">Add one</a>
-      {% else %}
-      {% for comment in post.comments.all %}
-      <strong>{{ comment.name }} - {{ comment.created_on }}</strong>
-      {{ comment.body | safe | linebreaks}}
-      {% endfor %}
-      <a class="btn btn-primary" href="{% url 'add-comment' post.pk %}">Leave a comment:</a>
-      {% endif %}
+    <h2>Comments</h2>
+    {% if not post.comments.all %}
+    No comments yet.. <a class="btn btn-primary" href="{% url 'add-comment' post.pk %}">Add one</a>
+    {% else %}
+    {% for comment in post.comments.all %}
+    <strong>{{ comment.name }} - {{ comment.created_on }}</strong>
+    {{ comment.body | safe | linebreaks}}
+    {% endfor %}
+    <a class="btn btn-primary" href="{% url 'add-comment' post.pk %}">Leave a comment:</a>
+    {% endif %}
   </div>
 </article>
 
